@@ -40,7 +40,7 @@ class MainPage(Handler):
             cookie_val = check_secure_val(visit_cookie_str)
             if cookie_val:
                 visits = int(cookie_val)
-        visits =+ 1
+        visits = visits + 1
         new_cookie_val = make_secure_val(str(visits))
         self.response.headers.add_header('Set-Cookie', 
                 'visits=%s' % new_cookie_val)
