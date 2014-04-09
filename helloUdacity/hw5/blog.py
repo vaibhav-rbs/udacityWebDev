@@ -31,7 +31,7 @@ class blogHandler(webapp2.RequestHandler):
         return db.Key.from_path('blogs',name)
 
     def render_json(self, d):
-       json_txt = json.dumps(d)
+       json_txt = json.dumps(str(d))
        self.response.headers['Content-Type'] = (
                'application/json; charset=UTF-8'
                )
