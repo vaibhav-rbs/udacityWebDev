@@ -190,7 +190,7 @@ class Signup(blogHandler):
             cookie_user    = make_secure_val(str(account.key().id()))
             self.response.headers.add_header('Set-Cookie', 
                 'user_id=%s; Path=/' % cookie_user)
-            self.redirect('/welcome')
+            self.redirect('/blog/welcome')
             
 class Login(blogHandler):
     def get(self):
@@ -206,7 +206,7 @@ class Login(blogHandler):
                 cookie_user = make_secure_val(str(userExists.key().id()))
                 self.response.headers.add_header('Set-Cookie', 
                         'user_id=%s; Path=/' % cookie_user)
-                self.redirect('/welcome')
+                self.redirect('/blog/welcome')
         else:
             params = {}
             params['invalid_login'] = "Invalid login"
