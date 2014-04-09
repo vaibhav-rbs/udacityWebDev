@@ -3,6 +3,7 @@ import re
 import webapp2
 import jinja2
 import hmac
+import json
 
 from google.appengine.ext import db
 
@@ -29,6 +30,13 @@ class blogHandler(webapp2.RequestHandler):
     def blogKey(cls, name = 'default'):
         return db.Key.from_path('blogs',name)
 
+    def render_json(self, d):
+       json_txt = json.dumps(d)
+       self.response.headers['Content-Type'] = (
+               'application/json; charset=UTF-8'
+               )
+       self.response.out.write(json_txt)
+
 # db class for blog
 class Post(db.Model):
     subject = db.StringProperty(required = True)
@@ -40,11 +48,25 @@ class Post(db.Model):
         self._render_text = self.content.replace('\n','<br>')
         return render_str("post.html",p=self)
 
-
 class blogFront(blogHandler):
     def get(self):
         posts = Post.all().order('-created')
         self.render('front.html',posts = posts)
+
+class blogFrontJson(blogHandler):
+    def get(self):
+        posts = db.GqlQuery( "SELECT * from Post").get().all()
+        jsonList = []
+        time_fmt = '%c'
+        for p in posts:
+            d ={
+                'subject':p.subject,'content':p.content,
+                'created':p.created.strftime(time_fmt),
+                'last_modified':p.last_modified.strftime(time_fmt)
+            }
+            jsonList.append(d)
+        self.render_json(jsonList) 
+
 
 class postPage(blogHandler):
     def get(self,post_id):
@@ -55,6 +77,22 @@ class postPage(blogHandler):
             self.error(404)
             return
         self.render("permalink.html",post=post)
+
+class postPageJson(blogHandler):
+    def get(self,post_id):
+        key = db.Key.from_path(
+                'Post',int(post_id),parent=blogHandler.blogKey())
+        post = db.get(key).all()
+        jsonList = []
+        time_fmt = '%c'
+        for p in post:
+            d ={
+                'subject':p.subject,'content':p.content,
+                'created':p.created.strftime(time_fmt),
+                'last_modified':p.last_modified.strftime(time_fmt)
+            }
+            jsonList.append(d)
+        self.render_json(jsonList)
 
 class newPost(blogHandler):
     def get(self):
@@ -197,9 +235,11 @@ class Welcome(blogHandler):
             self.redirect('/blog/signup')
 
 app = webapp2.WSGIApplication([("/blog/?", blogFront),
+                               ("/blog/.json",blogFrontJson),
                                ("/blog/([0-9]+)",postPage),
+                               ("/blog/([0-9]+).json",postPageJson),
                                ("/blog/newpost", newPost), 
                                ("/blog/signup", Signup),
                                ("/blog/login", Login),
                                ("/blog/logout", Logout),
-                               ("/welcome", Welcome)],debug=True)
+                               ("/blog/welcome", Welcome)],debug=True)
