@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table border="1" style="width:100%">
+  {% for emp in total_employees %}
+
+  <tr>
+    <td>{{ emp.firstName}}</td>
+    <td>{{ emp.lastName}}</td>
+    <td>{{ emp.email}}</td>
+    <td>{{ emp.title}}</td>
+    <!-- <td>{{ emp.email}}</td> -->
+  </tr>
+
+
+    <br><br>
+  {% endfor %}
+</table>
+
+{% endblock %}

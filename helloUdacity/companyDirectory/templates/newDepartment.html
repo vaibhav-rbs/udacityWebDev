@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>ADD NEW DEPARTMENT</h2>
+
+    <form method="post">
+      <label>
+        <div>DEPARTMENT NO</div>
+        <input type="text" name="deptNo" value="{{deptNo}}">
+      </label>
+
+      <label>
+        <div>DEPARTMENT NAME</div>
+        <input type="text" name="deptName" value="{{deptName}}">
+      </label>
+
+
+      <div class="error">{{error}}</div>
+
+      <input type="submit">
+    </form>
+{% endblock %}

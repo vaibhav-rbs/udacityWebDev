@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>ADD NEW EMPLOYEE</h2>
+
+    <form method="post">
+      <label>
+        <div>EMP NO</div>
+        <input type="text" name="empNo" value="{{empNo}}">
+      </label>
+
+      <label>
+        <div>FIRST NAME</div>
+        <input type="text" name="firstName" value="{{firstName}}">
+      </label>
+
+      <label>
+        <div>LAST NAME</div>
+        <input type="text" name="lastName" value="{{lastName}}">
+      </label>
+
+      <label>
+        <div>TITLE</div>
+        <input type="text" name="title" value="{{title}}">
+      </label>
+
+      <label>
+        <div>EMAIL</div>
+        <input type="text" name="email" value="{{email}}">
+      </label>
+
+      <label>
+        <div>PASSWORD</div>
+        <input type="password" name="password" value="">
+      </label>
+
+      <label>
+        <div>VERIFY PASSWORD</div>
+        <input type="password" name="verify" value="">
+      </label>
+
+      <label>
+        <div>VERIFY PASSWORD</div>
+        <input type="password" name="verify" value="">
+      </label>
+
+      <label>
+        <div>SUPERVISOR NAME</div>
+          <select name="supervisorSelect">
+          <option value="Milk">Fresh Milk</option>
+          </select>
+      </label>
+
+      <div class="error">{{error}}</div>
+
+      <input type="submit">
+    </form>
+{% endblock %}

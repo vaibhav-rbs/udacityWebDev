@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>ADD NEW SUPERVISOR</h2>
+
+    <form method="post">
+      <label>
+        <div>SUPERVISOR NUMBER</div>
+        <input type="text" name="supervisorNo" value="{{supervisorNo}}">
+      </label>
+
+      <label>
+        <div>NAME</div>
+        <input type="text" name="name" value="{{name}}">
+      </label>
+
+      <label>
+        <div>PHONE NUMBER</div>
+        <input type="text" name="phoneNumber" value="{{phoneNumber}}">
+      </label>
+
+      <div class="error">{{error}}</div>
+
+      <input type="submit">
+    </form>
+{% endblock %}
