@@ -19,6 +19,15 @@
         <input type="text" name="phoneNumber" value="{{phoneNumber}}">
       </label>
 
+      <label>
+        <div>DEPARTMENT</div>
+          <select name="departmentList">
+          {% for department in departments %}
+          <option value={{department.deptName}}>{{department.deptName}}</option>
+          {% endfor %}
+          </select>
+      </label>
+
       <div class="error">{{error}}</div>
 
       <input type="submit">

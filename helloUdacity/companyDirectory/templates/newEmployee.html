@@ -2,7 +2,9 @@
 
 {% block content %}
   <h2>ADD NEW EMPLOYEE</h2>
-
+    {%if params%}
+        <div>"{{params.emp_no}} does exists in the system"</div>
+    {%endif%}
     <form method="post">
       <label>
         <div>EMP NO</div>
@@ -39,15 +41,13 @@
         <input type="password" name="verify" value="">
       </label>
 
-      <label>
-        <div>VERIFY PASSWORD</div>
-        <input type="password" name="verify" value="">
-      </label>
 
       <label>
         <div>SUPERVISOR NAME</div>
           <select name="supervisorSelect">
-          <option value="Milk">Fresh Milk</option>
+          {% for supervisor in supervisors %}
+          <option value={{supervisor.name}}>{{supervisor.name}}</option>
+          {% endfor %}
           </select>
       </label>
 

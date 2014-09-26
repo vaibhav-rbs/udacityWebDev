@@ -62,13 +62,11 @@ def render_str(template, **params):
 
 class Department(db.Model):
 
-    deptNo = db.StringProperty(required=True)
     deptName = db.StringProperty(required=True)
 
 
 class Supervisor(db.Model):
 
-    supervisorNo = db.StringProperty(required=True)
     name = db.StringProperty(required=True)
     number = db.PhoneNumberProperty(required=True)
     dept = db.ReferenceProperty(Department,
@@ -77,7 +75,6 @@ class Supervisor(db.Model):
 
 class Employee(db.Model):
 
-    empNo = db.StringProperty(required=True)
     firstName = db.StringProperty(required=True)
     lastName = db.StringProperty(required=True)
     title = db.StringProperty(required=True)
@@ -96,17 +93,14 @@ class BlogHandler(webapp2.RequestHandler):
         return t.render(params)
 
     def render(self, template, **kw):
-        """
-
-        :rtype : object
-        """
         self.response.out.write(self.render_str(template, **kw))
 
 
 class CompanyDirectoryFront(BlogHandler):
 
     def get(self):
-        total_employees = db.GqlQuery("SELECT * from  Employee ").get().all()
+        memcache.flush_all()
+        total_employees = db.GqlQuery("SELECT * from  Employee").get().all()
         self.render('front.html', total_employees=total_employees)
 
 
@@ -118,7 +112,7 @@ class NewDepartment(BlogHandler):
         memcache.flush_all()
         dept_no = self.request.get('deptNo')
         dept_name = self.request.get('deptName')
-        departments = Department(deptNo=dept_no, deptName=dept_name)
+        departments = Department(key_name=dept_no, deptName=dept_name)
         departments.put()
         self.redirect("/companyDirectory/")
 
@@ -126,22 +120,26 @@ class NewDepartment(BlogHandler):
 class NewSupervisor(BlogHandler):
 
     def get(self):
-        self.render("newSupervisor.html")
+        departments = db.GqlQuery("SELECT * from Department").get().all()
+        self.render("newSupervisor.html", departments=departments)
 
     def post(self):
         memcache.flush_all()
         supervisor_no = self.request.get('supervisorNo')
         name = self.request.get('name')
         number = self.request.get('phoneNumber')
+        departmentList = self.request.get('departmentList')
+        department_object = db.GqlQuery("SELECT * from Department where deptName =:1",departmentList).get().all().fetch(1)[0]
         supervisor = Supervisor(
-            supervisorNo=supervisor_no, name=name, number=number)
+            key_name=supervisor_no, name=name, number=number,dept=department_object)
         supervisor.put()
         self.redirect("/companyDirectory/")
 
 
 class NewEmployee(BlogHandler):
     def get(self):
-        self.render("newEmployee.html")
+        supervisors = db.GqlQuery("SELECT * from Supervisor").get().all()
+        self.render("newEmployee.html", supervisors=supervisors)
 
     def post(self):
         memcache.flush_all()
@@ -152,14 +150,20 @@ class NewEmployee(BlogHandler):
         email = self.request.get('email')
         password = self.request.get('password')
         verify = self.request.get('verify')
+        supervisor = self.request.get('supervisorSelect')
         if verify == password:
-            password = password
-            employee = Employee(
-                empNo=emp_no, firstName=first_name, lastName=last_name,
-                title=title, email=email, password=password)
-            employee.put()
-            Supervisor()
-            self.redirect("/companyDirectory/")
+            supervisor_object = db.GqlQuery("SELECT * from Supervisor where name =:1",supervisor).get().all().fetch(1)[0]
+            employee = Employee.get_or_insert(key_name=emp_no,
+                                              firstName=first_name, lastName=last_name,
+                                              title=title, email=email, password=password,
+                                              supervisor=supervisor_object)
+            if not employee:
+                employee.put()
+                self.redirect("/companyDirectory/")
+            else:
+                params = {"emp_no":emp_no}
+                self.render("newEmployee.html", params=params)
+
 
 
 
